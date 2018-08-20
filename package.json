@@ -1,0 +1,19 @@
+{
+  "name": "pi_gateway",
+  "version": "1.0.0",
+  "description": "A Raspberry Pi acting as gateway for sensors making them availible via REST APIs",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:davidulander/pi-gateway.git"
+  },
+  "author": "David Ulander",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/davidulander/pi-gateway/issues"
+  },
+  "homepage": "https://github.com/davidulander/pi-gateway#readme"
+}
