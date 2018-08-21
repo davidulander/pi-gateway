@@ -1,31 +1,31 @@
-var onoff = require("onoff"); //#A
+const sleep = require("../utils/utils");
+const Gpio = require("onoff").Gpio;
+const humidityVcc = new Gpio(25, "out");
+const humidityPin = new Gpio(4, "in");
 
-var Gpio = onoff.Gpio,
-  led = new Gpio(4, "out"), //#B
-  interval;
-
-interval = setInterval(function() {
-  //#C
-  var value = (led.readSync() + 1) % 2; //#D
-  led.write(value, function() {
-    //#E
-    console.log("Changed LED state to: " + value);
+const humidityMeasure = callback => {
+  humidityVcc.writeSync(1);
+  let humidityValue;
+  sleep(20).then(() => {
+    humidityPin.read((err, value) => {
+      sleep(20).then(() => humidityVcc.writeSync(0));
+      humidityValue = value;
+      if (err) console.log(err);
+      else
+        console.log("Humidity sensor:", humidityValue == 1 ? "dry" : "humid");
+    });
   });
-}, 2000);
+  callback(humidityValue);
+};
 
-process.on("SIGINT", function() {
-  //#F
-  clearInterval(interval);
-  led.writeSync(0); //#G
-  led.unexport();
-  console.log("Bye, bye!");
+// const interval = setInterval(function() {
+// humidityMeasure();
+// }, 1500);
+process.on("SIGINT", () => {
+  // clearInterval(interval);
+  humidityPin.unexport();
+  humidityVcc.unexport();
+  console.log("Shutting down");
   process.exit();
 });
-
-// #A Import the onoff library
-// #B Initialize pin 4 to be an output pin
-// #C This interval will be called every 2 seconds
-// #D Synchronously read the value of pin 4 and transform 1 to 0 or 0 to 1
-// #E Asynchronously write the new value to pin 4
-// #F Listen to the event triggered on CTRL+C
-// #G Cleanly close the GPIO pin before exiting
+module.exports = humidityMeasure;
